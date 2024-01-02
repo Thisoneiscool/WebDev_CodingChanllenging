@@ -9,27 +9,32 @@ let usedAttributes = [
   'Age',
   'Rating',
 ];
+let data;
 
-d3.json('/players/').then((data) => {
+d3.json('/players/').then((fetchedData) => {
+  data = fetchedData;
   allAttributes = Object.keys(data[0]);
-  createTable(data, usedAttributes);
+  createTable(usedAttributes);
   updateDropdown();
 });
 
-function createTable(data, columns) {
-  // Select the table container and add a table element
+function createTable(columns) {
+  // Clear existing table
+  d3.select('#table-container').html('');
+
   let table = d3.select('#table-container').append('table');
   let thead = table.append('thead');
   let tbody = table.append('tbody');
 
-  // Append header row and populate with column headers
+  // Append header row
   thead
     .append('tr')
     .selectAll('th')
     .data(columns)
     .enter()
     .append('th')
-    .text((column) => column);
+    .text((column) => column)
+    .on('click', (event, column) => sortTableByColumn(column, table));
 
   // Create a row for each object in the data
   let rows = tbody.selectAll('tr').data(data).enter().append('tr');
@@ -69,6 +74,7 @@ d3.select('#attribute-dropdown').on('change', function () {
 function updateTableWithNewColumn(newAttribute) {
   let table = d3.select('table');
   table.select('thead tr').append('th').text(newAttribute);
+
   table
     .selectAll('tbody tr')
     .data(data)
