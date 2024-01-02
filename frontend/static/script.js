@@ -10,6 +10,17 @@ let usedAttributes = [
   'Rating',
 ];
 let data;
+let sortAscending = true;
+
+function sortTableByColumn(column) {
+  if (sortAscending) {
+    data.sort((a, b) => (a[column] > b[column] ? 1 : -1));
+  } else {
+    data.sort((a, b) => (a[column] < b[column] ? 1 : -1));
+  }
+  sortAscending = !sortAscending;
+  createTable(usedAttributes);
+}
 
 d3.json('/players/').then((fetchedData) => {
   data = fetchedData;
@@ -32,15 +43,23 @@ function createTable(columns) {
     .selectAll('th')
     .data(columns)
     .enter()
-    .append('th')
-    .text((column) => column);
+    .append('th');
+
+  headers
+    .append('span')
+    .text((column) => column)
+    .attr('class', 'sortable')
+    .on('click', (event, column) => sortTableByColumn(column));
 
   headers.each(function (column, i) {
     if (column !== 'Name' && column !== 'Nationality') {
       d3.select(this)
         .append('button')
         .text('X')
-        .on('click', () => removeColumn(column));
+        .on('click', (event) => {
+          event.stopPropagation();
+          removeColumn(column);
+        });
     }
   });
 
@@ -88,12 +107,21 @@ d3.select('#attribute-dropdown').on('change', function () {
 
 function updateTableWithNewColumn(newAttribute) {
   let table = d3.select('table');
-  let newHeader = table.select('thead tr').append('th').text(newAttribute);
+  let newHeader = table.select('thead tr').append('th');
+
+  newHeader
+    .append('span')
+    .text(newAttribute)
+    .attr('class', 'sortable')
+    .on('click', () => sortTableByColumn(newAttribute));
 
   newHeader
     .append('button')
     .text('X')
-    .on('click', () => removeColumn(newAttribute));
+    .on('click', (event) => {
+      event.stopPropagation();
+      removeColumn(newAttribute);
+    });
 
   table
     .selectAll('tbody tr')
