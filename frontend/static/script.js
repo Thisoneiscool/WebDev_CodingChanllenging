@@ -27,14 +27,22 @@ function createTable(columns) {
   let tbody = table.append('tbody');
 
   // Append header row
-  thead
+  let headers = thead
     .append('tr')
     .selectAll('th')
     .data(columns)
     .enter()
     .append('th')
-    .text((column) => column)
-    .on('click', (event, column) => sortTableByColumn(column, table));
+    .text((column) => column);
+
+  headers.each(function (column, i) {
+    if (column !== 'Name' && column !== 'Nationality') {
+      d3.select(this)
+        .append('button')
+        .text('X')
+        .on('click', () => removeColumn(column));
+    }
+  });
 
   // Create a row for each object in the data
   let rows = tbody.selectAll('tr').data(data).enter().append('tr');
@@ -46,6 +54,13 @@ function createTable(columns) {
     .enter()
     .append('td')
     .text((d) => d);
+}
+
+function removeColumn(column) {
+  usedAttributes = usedAttributes.filter((attr) => attr !== column);
+
+  createTable(usedAttributes);
+  updateDropdown();
 }
 
 function updateDropdown() {
@@ -73,7 +88,12 @@ d3.select('#attribute-dropdown').on('change', function () {
 
 function updateTableWithNewColumn(newAttribute) {
   let table = d3.select('table');
-  table.select('thead tr').append('th').text(newAttribute);
+  let newHeader = table.select('thead tr').append('th').text(newAttribute);
+
+  newHeader
+    .append('button')
+    .text('X')
+    .on('click', () => removeColumn(newAttribute));
 
   table
     .selectAll('tbody tr')
