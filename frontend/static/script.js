@@ -66,7 +66,15 @@ function createTable(columns) {
   });
 
   // Create a row for each object in the data
-  let rows = tbody.selectAll('tr').data(data).enter().append('tr');
+  let rows = tbody
+    .selectAll('tr')
+    .data(data)
+    .enter()
+    .append('tr')
+    .on('click', function (event, d) {
+      tbody.selectAll('tr').classed('selected', false);
+      d3.select(this).classed('selected', true);
+    });
 
   // Create a cell in each row for each column
   rows
