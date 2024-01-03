@@ -17,3 +17,16 @@ th {
 tr:nth-child(even) {
   background-color: #f2f2f2;
 }
+
+#content {
+  display: flex;
+}
+
+#table-container {
+  flex: 1;
+}
+
+#visualizations {
+  flex: 1;
+  padding-left: 20px;
+}
