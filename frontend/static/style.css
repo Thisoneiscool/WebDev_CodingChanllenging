@@ -69,7 +69,7 @@ tr:nth-child(even) {
 /* Additional styling for table */
 table {
   border-collapse: collapse;
-  width: 60%;
+  width: 100%;
 }
 
 th,
